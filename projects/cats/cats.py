@@ -159,7 +159,15 @@ def memo_diff(diff_function):
     cache = {}
 
     def memoized(typed, source, limit):
+        # - 第一次遇到某个 `(typed, source)` 对时，使用 `diff_function` 计算差异，并将该值连同所使用的 `limit`，以 `(value, limit)` 元组的形式存入缓存。
+        # - 再次遇到该 `(typed, source)` 对时，如果提供的 `limit` 小于或等于缓存中的 `limit`，则返回缓存的值。
+        # - 否则，重新计算差异、更新缓存并返回结果。
         "*** YOUR CODE HERE ***"
+        if (typed, source) in cache and limit <= cache[(typed, source)][1]:
+            return cache[(typed, source)][0]
+        else:
+            cache[(typed, source)] = (diff_function(typed, source, limit), limit)
+            return cache[(typed, source)][0]
 
     return memoized
 
@@ -168,7 +176,7 @@ def memo_diff(diff_function):
 # Phase 2 #
 ###########
 
-
+@memo
 def autocorrect(typed_word: str, word_list: list[str], diff_function, limit: int) -> str:
     """Returns the element of WORD_LIST that has the smallest difference
     from TYPED_WORD based on DIFF_FUNCTION. If multiple words are tied for the smallest difference,
@@ -192,9 +200,17 @@ def autocorrect(typed_word: str, word_list: list[str], diff_function, limit: int
     # 根据 `diff_function` 的判断，返回 `word_list` 中与给定 `typed_word` 最接近的单词。
     if typed_word in word_list:
         return typed_word
-    if min(diff_function(typed_word, w, limit) for w in word_list) > limit:
+    
+    min_diff = float('inf')
+    min_word = ""
+    for w in word_list:
+        cur_diff = diff_function(typed_word, w, limit)
+        if cur_diff < min_diff:
+            min_diff = cur_diff
+            min_word = w
+    if min_diff > limit:
         return typed_word
-    return min(word_list, key=lambda w: diff_function(typed_word, w, limit))
+    return min_word
 
 
 def furry_fixes(typed: str, source: str, limit: int) -> int:
@@ -235,7 +251,7 @@ def furry_fixes(typed: str, source: str, limit: int) -> int:
     else:
         return 1 + furry_fixes(typed[1:], source[1:], limit - 1)
 
-
+@memo_diff
 def minimum_mewtations(typed: str, source: str, limit: int) -> int:
     """A diff function for autocorrect that computes the edit distance from TYPED to SOURCE.
     This function takes in a string TYPED, a string SOURCE, and a number LIMIT.
@@ -261,6 +277,8 @@ def minimum_mewtations(typed: str, source: str, limit: int) -> int:
         return len(typed)
     if limit < 0:
         return 0
+    if limit == 0:
+        return 1
     if typed[0] == source[0]:
         return minimum_mewtations(typed[1:], source[1:], limit)
     else:
@@ -312,6 +330,14 @@ def report_progress(typed: list[str], source: list[str], user_id: int, upload) -
     0.2
     """
     "*** YOUR CODE HERE ***"
+    progress = 0
+    for i in range(len(typed)):
+        if typed[i] != source[i]:
+            break
+        progress += 1
+    progress = progress / len(source)
+    upload({'id': user_id, 'progress': progress})
+    return progress
 
 
 def time_per_word(words: list[str], player_timestamps: list[list[int]]) -> dict:
@@ -334,7 +360,7 @@ def time_per_word(words: list[str], player_timestamps: list[list[int]]) -> dict:
     """
     tpp = player_timestamps  # A shorter name (for convenience)
     "*** YOUR CODE HERE ***"
-    times = []  # You may remove this line
+    times = [[tp[i + 1] - tp[i] for i in range(len(tp) - 1)] for tp in tpp]  # You may remove this line
     return {'words': words, 'times': times}
 
 
@@ -361,6 +387,16 @@ def fastest_words(words_and_times: dict) -> list[list[str]]:
     player_indices = range(len(times))  # contains an *index* for each player
     word_indices = range(len(words))    # contains an *index* for each word
     "*** YOUR CODE HERE ***"
+    # 找到每个玩家的最快词列表 -> 列表：index0 装的是player0最快的词列表
+    # def get_time(times, player_num, word_index):
+    #    根据 time_per_word 返回的时间列表，
+    #    返回玩家 player_num 输入 word_index 处单词所花费的时间。"""
+    
+    fastest_player_index_each_word = [
+        min(player_indices, key=lambda p: get_time(times, p, w)) 
+        for w in word_indices]
+    return [[words[w] for w in word_indices if fastest_player_index_each_word[w] == p] for p in player_indices]
+
 
 
 def check_words_and_times(words_and_times):
