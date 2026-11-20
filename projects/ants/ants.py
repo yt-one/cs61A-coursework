@@ -128,7 +128,13 @@ class Ant(Insect):
             place.ant = self
         else:
             "*** YOUR CODE HERE ***"
-            assert place.ant is None, 'Too many ants in {0}'.format(place)
+            if place.ant.can_contain(self):
+                place.ant.store_ant(self)
+            elif self.can_contain(place.ant):
+                self.store_ant(place.ant)
+                place.ant = self
+            else:
+                assert place.ant is None, 'Too many ants in {0}'.format(place)
         Insect.add_to(self, place)
 
     def remove_from(self, place: Place) -> None:
@@ -249,7 +255,7 @@ class FireAnt(Ant):
     food_cost = 5
     # OVERRIDE CLASS ATTRIBUTES HERE
     "*** YOUR CODE HERE ***"
-    implemented = False   # Change to True to view in the GUI
+    implemented = True   # Change to True to view in the GUI
 
     def __init__(self, health: int = 3) -> None:
         """Create an Ant with a HEALTH quantity."""
@@ -263,13 +269,48 @@ class FireAnt(Ant):
         the additional damage if the fire ant dies.
         """
         "*** YOUR CODE HERE ***"
+        
+        damage = amount
+        if self.health <= damage:
+            damage += self.damage
+        for bee in self.place.bees[:]:
+            bee.reduce_health(damage)
+        super().reduce_health(amount)
+        
+
+
 
 "*** YOUR CODE HERE ***"
 # The WallAnt class
+class WallAnt(Ant):
+    name = 'Wall'
+    food_cost = 4
+    implemented = True
+
+    def __init__(self, health: int = 4) -> None:
+        super().__init__(health)
 
 "*** YOUR CODE HERE ***"
 # The HungryAnt Class
+class HungryAnt(Ant):
+    name = 'Hungry'
+    food_cost = 4
+    implemented = True
 
+    chew_cooldown = 3
+
+    def __init__(self, health: int = 1) -> None:
+        super().__init__(health)
+        self.cooldown = 0
+    
+    def action(self, gamestate: GameState) -> None:
+        if self.cooldown > 0:
+            self.cooldown -= 1
+            return
+        bee = random_bee(self.place.bees)
+        if bee:
+            bee.reduce_health(bee.health)
+            self.cooldown = HungryAnt.chew_cooldown
 
 class ContainerAnt(Ant):
     """
@@ -283,9 +324,12 @@ class ContainerAnt(Ant):
 
     def can_contain(self, other: Ant) -> bool:
         "*** YOUR CODE HERE ***"
+        return self.ant_contained is None and not other.is_container
 
     def store_ant(self, ant: Ant) -> None:
         "*** YOUR CODE HERE ***"
+        self.ant_contained = ant
+
 
     def remove_ant(self, ant: Ant) -> None:
         if self.ant_contained is not ant:
@@ -304,6 +348,8 @@ class ContainerAnt(Ant):
 
     def action(self, gamestate: GameState) -> None:
         "*** YOUR CODE HERE ***"
+        if self.ant_contained:
+            self.ant_contained.action(gamestate)
 
 
 class ProtectorAnt(ContainerAnt):
@@ -313,10 +359,28 @@ class ProtectorAnt(ContainerAnt):
     food_cost = 4
     # OVERRIDE CLASS ATTRIBUTES HERE
     "*** YOUR CODE HERE ***"
-    implemented = False   # Change to True to view in the GUI
+    implemented = True   # Change to True to view in the GUI
+
+    def __init__(self, health:int = 2):
+        super().__init__(health)
 
 "*** YOUR CODE HERE ***"
 # The TankAnt class
+class TankAnt(ContainerAnt):
+    name = 'Tank'
+    food_cost = 6
+    damage = 1
+    # OVERRIDE CLASS ATTRIBUTES HERE
+    "*** YOUR CODE HERE ***"
+    implemented = True   # Change to True to view in the GUI
+
+    def __init__(self, health:int = 2):
+        super().__init__(health)
+    
+    def action(self, gamestate: GameState) -> None:
+        super().action(gamestate)
+        for bee in self.place.bees[:]:
+            bee.reduce_health(self.damage)
 
 
 class Water(Place):
