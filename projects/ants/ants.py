@@ -170,6 +170,8 @@ class ThrowerAnt(Ant):
     damage = 1
     # ADD/OVERRIDE CLASS ATTRIBUTES HERE
     food_cost = 3
+    min_reach = 0
+    max_reach = float('inf')
 
     def nearest_bee(self) -> Bee | None:
         """Return a random Bee from the nearest Place (excluding the Hive) that contains Bees and is reachable from
@@ -180,9 +182,18 @@ class ThrowerAnt(Ant):
         if not self.place:
             return None  # An Ant that is not in a Place has no nearest Bee
         "*** YOUR CODE HERE ***"
+
         nearest = self.place
-        while not nearest.bees and nearest.entrance:
+        for i in range(self.min_reach):
+            if nearest.entrance:
+                nearest = nearest.entrance
+            else:
+                return None
+
+        distance_from_start = self.min_reach
+        while not nearest.bees and nearest.entrance and distance_from_start < self.max_reach:
             nearest = nearest.entrance
+            distance_from_start += 1
 
         return random_bee(nearest.bees) if (not nearest.is_hive and nearest.bees) else None
 
@@ -215,7 +226,8 @@ class ShortThrower(ThrowerAnt):
     food_cost = 2
     # OVERRIDE CLASS ATTRIBUTES HERE
     "*** YOUR CODE HERE ***"
-    implemented = False   # Change to True to view in the GUI
+    implemented = True   # Change to True to view in the GUI
+    max_reach = 3
 
 
 class LongThrower(ThrowerAnt):
@@ -225,7 +237,8 @@ class LongThrower(ThrowerAnt):
     food_cost = 2
     # OVERRIDE CLASS ATTRIBUTES HERE
     "*** YOUR CODE HERE ***"
-    implemented = False   # Change to True to view in the GUI
+    implemented = True   # Change to True to view in the GUI
+    min_reach = 5
 
 
 class FireAnt(Ant):
