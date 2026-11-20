@@ -59,6 +59,7 @@ class Insect:
         self.health = health
         self.full_health = health
         self.place = place
+        self.is_waterproof = False
 
         # assign a unique ID to every insect
         self.id = Insect.next_id
@@ -113,6 +114,7 @@ class Ant(Insect):
 
     def __init__(self, health: int = 1) -> None:
         super().__init__(health)
+        self.doubled = False
 
     def can_contain(self, other: Ant) -> bool:
         return False
@@ -149,6 +151,9 @@ class Ant(Insect):
     def double(self) -> None:
         """Double this ants's damage, if it has not already been doubled."""
         "*** YOUR CODE HERE ***"
+        if not self.doubled:
+            self.damage *= 2
+            self.doubled = True
 
 
 class HarvesterAnt(Ant):
@@ -390,10 +395,21 @@ class Water(Place):
         """Add an Insect to this place. If the insect is not waterproof, reduce
         its health to 0."""
         "*** YOUR CODE HERE ***"
+        super().add_insect(insect)
+        if not insect.is_waterproof:
+            insect.reduce_health(insect.health)
 
+        
 "*** YOUR CODE HERE ***"
 # The ScubaThrower class
+class ScubaThrower(ThrowerAnt):
+    name="Scuba"
+    food_cost = 6
+    implemented = True
 
+    def __init__(self, health: int = 1) -> None:
+        super().__init__(health)
+        self.is_waterproof = True
 
 class QueenAnt(ThrowerAnt):
     """QueenAnt boosts the damage of all ants behind her."""
@@ -402,19 +418,37 @@ class QueenAnt(ThrowerAnt):
     food_cost = 7
     # OVERRIDE CLASS ATTRIBUTES HERE
     "*** YOUR CODE HERE ***"
-    implemented = False   # Change to True to view in the GUI
+    implemented = True   # Change to True to view in the GUI
 
+    def __init__(self, health: int = 1) -> None:
+        super().__init__(health)
+        
     def action(self, gamestate: GameState) -> None:
         """A queen ant throws a leaf, but also doubles the damage of ants
         in her tunnel.
         """
         "*** YOUR CODE HERE ***"
+        cur_process_place = self.place.exit
+        while cur_process_place:
+            if not cur_process_place.ant:
+                cur_process_place = cur_process_place.exit
+                continue
+            cur_process_place.ant.double()
+            if cur_process_place.ant.is_container and cur_process_place.ant.ant_contained:
+                    cur_process_place.ant.ant_contained.double()
+            cur_process_place = cur_process_place.exit
+        
+        super().action(gamestate)
 
     def reduce_health(self, amount: float) -> None:
         """Reduce health by AMOUNT, and if the QueenAnt has no health
         remaining, signal the end of the game.
         """
         "*** YOUR CODE HERE ***"
+        super().reduce_health(amount)
+        if self.health <= 0:
+            ants_lose()
+        
 
 
 ################
@@ -505,6 +539,9 @@ class Bee(Insect):
     name = 'Bee'
     damage = 1
 
+    def __init__(self, health: int) -> None:
+        super().__init__(health)
+        self.is_waterproof = True
 
     def sting(self, ant: Ant) -> None:
         """Attack an ANT, reducing its health by 1."""
