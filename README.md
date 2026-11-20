@@ -7,8 +7,8 @@ UC Berkeley **CS 61A（Structure and Interpretation of Computer Programs）** �
 | 类别 | 内容 |
 | --- | --- |
 | Homework（课后作业） | [HW 04：Recursive Data](homeworks/hw04/) · [HW 05：List Mutation](homeworks/hw05/) |
-| Lab（实验练习） | [Lab 04：Linked Lists](labs/lab04/) · [Lab 05：Trees](labs/lab05/) |
-| Project（课程项目） | [Cats：计算机辅助打字软件](projects/cats/)，已完成 |
+| Lab（实验练习） | [Lab 04：Linked Lists](labs/lab04/) · [Lab 05：Trees](labs/lab05/) · [Lab 06：Mutation](labs/lab06/) |
+| Project（课程项目） | [Cats：计算机辅助打字软件](projects/cats/)，已完成 · [Ants：蚂蚁大战蜜蜂](projects/ants/)，已完成第 1–3 阶段 |
 
 ## Cats
 
@@ -24,6 +24,13 @@ cd projects/cats
 python cats.py -t
 ```
 
+## Ants
+
+面向对象塔防游戏，通过继承与组合实现不同蚂蚁的部署、攻击和防御机制。[官方题目](https://cs61a.org/fa26/projects/ants/)
+
+- **已实现**　基础游戏流程、隧道入口追踪、最近蜜蜂索敌、不同射程的投掷蚂蚁、火焰蚂蚁、围墙蚂蚁、饥饿蚂蚁、容器与保护蚂蚁、坦克蚂蚁、水域与潜水蚂蚁，以及蚁后。
+- **文件入口**　[代码实现](projects/ants/ants.py)
+
 ## Homework
 
 - **HW 04 · Recursive Data**　链表与树的递归操作，以及基于递归数据结构的 Mobile 平衡判定。[代码](homeworks/hw04/hw04.py)
@@ -33,3 +40,4 @@ python cats.py -t
 
 - **Lab 04 · Linked Lists**　链表的遍历、修改与构造。[代码](labs/lab04/lab04.py)
 - **Lab 05 · Trees**　树的构造、遍历与叶子节点操作。[代码](labs/lab05/lab05.py)
+- **Lab 06 · Mutation**　列表的可变操作、字典分组，以及类与对象的可变状态。[代码](labs/lab06/lab06.py)
