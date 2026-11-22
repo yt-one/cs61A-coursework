@@ -7,7 +7,7 @@ UC Berkeley **CS 61A（Structure and Interpretation of Computer Programs）** �
 | 类别 | 内容 |
 | --- | --- |
 | Homework（课后作业） | [HW 04：Recursive Data](homeworks/hw04/) · [HW 05：List Mutation](homeworks/hw05/) |
-| Lab（实验练习） | [Lab 04：Linked Lists](labs/lab04/) · [Lab 05：Trees](labs/lab05/) · [Lab 06：Mutation](labs/lab06/) |
+| Lab（实验练习） | [Lab 04：Linked Lists](labs/lab04/) · [Lab 05：Trees](labs/lab05/) · [Lab 06：Mutation](labs/lab06/) · [Lab 07：Iterators and Generators](labs/lab07/) |
 | Project（课程项目） | [Cats：计算机辅助打字软件](projects/cats/)，已完成 · [Ants：蚂蚁大战蜜蜂](projects/ants/)，已完成第 1–3 阶段 |
 
 ## Cats
@@ -41,3 +41,4 @@ python cats.py -t
 - **Lab 04 · Linked Lists**　链表的遍历、修改与构造。[代码](labs/lab04/lab04.py)
 - **Lab 05 · Trees**　树的构造、遍历与叶子节点操作。[代码](labs/lab05/lab05.py)
 - **Lab 06 · Mutation**　列表的可变操作、字典分组，以及类与对象的可变状态。[代码](labs/lab06/lab06.py)
+- **Lab 07 · Iterators and Generators**　迭代器元素统计与连续重复查找、Hailstone 序列生成、无限有序迭代器合并，以及完全平方数分解。[代码](labs/lab07/lab07.py)
